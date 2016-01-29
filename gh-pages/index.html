@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html manifest="/manifest/days.appcache">
+	<head>
+    <title>Days</title>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <script src="/jquery"></script>
+    <!-- <script src="/jquery-m"></script> -->
+    <style>
+#dateform, #days {
+  text-align: center;
+}
+.centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -50px;
+  margin-left: -50px;
+  width: 100px;
+  height: 100px;
+  text-align: center;
+}
+#count {
+  font-weight: bold;
+  font-size: 3em;
+}
+select {
+  font-size: 2em;
+}
+    </style>
+  </head>
+	<body>
+    <!-- DATE ENTRY FORM -->
+    <div id="dateform">
+      <select id="month" name="month" value="">
+        <option value="0">January</option>
+        <option value="1">February</option>
+        <option value="2">March</option>
+        <option value="3">April</option>
+        <option value="4">May</option>
+        <option value="5">June</option>
+        <option value="6">July</option>
+        <option value="7">August</option>
+        <option value="8">September</option>
+        <option value="9">October</option>
+        <option value="10">November</option>
+        <option value="11">December</option>
+      </select>
+      <select id="day" name="day" value="">
+        <option value="01">01</option>
+        <option value="02">02</option>
+        <option value="03">03</option>
+        <option value="04">04</option>
+        <option value="05">05</option>
+        <option value="06">06</option>
+        <option value="07">07</option>
+        <option value="08">08</option>
+        <option value="09">09</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+        <option value="13">13</option>
+        <option value="14">14</option>
+        <option value="15">15</option>
+        <option value="16">16</option>
+        <option value="17">17</option>
+        <option value="18">18</option>
+        <option value="19">19</option>
+        <option value="20">20</option>
+        <option value="21">21</option>
+        <option value="22">22</option>
+        <option value="23">23</option>
+        <option value="24">24</option>
+        <option value="25">25</option>
+        <option value="26">26</option>
+        <option value="27">27</option>
+        <option value="28">28</option>
+        <option value="29">29</option>
+        <option value="30">30</option>
+        <option value="31">31</option>
+      </select>
+      <select id="year" name="year" value="">
+      </select>
+    </div>
+
+    <div id="days" class="centered">
+      <span id="count"></span>
+    </div>
+
+    <script>
+$(document).ready(function(){
+  console.log(navigator.onLine)
+  // build years
+  var year = new Date(Date.now()).getFullYear()
+  var $year = $('#year')
+  var startDate
+    for (var i=0; i<50; i++) {
+      $('#year').append('<option value="'+(year-i)+'">'
+                        +(year-i)+'</option>')
+    }
+  // set date
+  var startString = localStorage.getItem('startDate')
+  if (startString) {
+    startDate = new Date(startString)
+  } else {
+    startDate = new Date(Date.now()-1)
+  }
+  var startMonth = startDate.getMonth()
+  var startDay = startDate.getDate()
+  var startYear = startDate.getFullYear()
+  var dayCount = (Date.now()-startDate.getTime()) / 8.64e+7
+  $('#count').text(Math.ceil(dayCount))
+  $('#month').val(startMonth)
+  $('#day').val(startDay)
+  $('#year').val(startYear)
+
+  // give events to the inputs
+  $('#month').on('change', function(event) {
+    startMonth = $(this).val()
+    startDate = new Date(startYear, startMonth, startDay)
+    localStorage.setItem('startDate', startDate.toString())
+    dayCount = (Date.now()-startDate.getTime()) / 8.64e+7
+    $('#count').text(Math.ceil(dayCount))
+  })
+  $('#day').on('change', function(event) {
+    startDay = $(this).val()
+    startDate = new Date(startYear, startMonth, startDay)
+    localStorage.setItem('startDate', startDate.toString())
+    dayCount = (Date.now()-startDate.getTime()) / 8.64e+7
+    $('#count').text(Math.ceil(dayCount))
+  })
+  $('#year').on('change', function(event) {
+    startYear = $(this).val()
+    startDate = new Date(startYear, startMonth, startDay)
+    localStorage.setItem('startDate', startDate.toString())
+    dayCount = (Date.now()-startDate.getTime()) / 8.64e+7
+    $('#count').text(Math.ceil(dayCount))
+  })
+})
+    </script>
+	</body>
+</html>
