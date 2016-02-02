@@ -1,7 +1,10 @@
 CACHE MANIFEST
-# version 0.0.064
+# version 0.0.065
 CACHE:
 index.html
 jquery-2.2.0.min.js
 daycounter.css
 daycounter.js
+favicons/favicon-16x16.png
+favicons/favicon-32x32.png
+favicons/favicon-96x96.png
