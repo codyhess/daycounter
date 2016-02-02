@@ -12,6 +12,8 @@
 	<body>
     <!-- DATE ENTRY FORM -->
     <div id="content">
+      <div id="datestring" class="topbar">
+      </div>
       <div id="dateform" class="topbar">
         <select id="month" name="month" value="">
           <option value="0">January</option>
@@ -65,7 +67,12 @@
       </div>
 
       <div id="days" class="centered">
-        <span id="count"></span>
+        <span id="count"></span><br>
+        <span id="message"></span>
+        <form>
+          <input id="messageBox">
+          <input type="submit" class="hiddenSubmit">
+        </form>
       </div>
     </div>
 

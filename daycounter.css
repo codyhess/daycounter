@@ -1,14 +1,19 @@
+body {
+  font-family: 'arial black', Gadget, sans-serif;
+}
 .topbar {
   text-align: center;
 }
+#datestring {
+  display: none;
+}
 .centered {
   position: absolute;
+  margin: 0;
   top: 50%;
   left: 50%;
-  margin-top: -50px;
-  margin-left: -50px;
-  width: 100px;
-  height: 100px;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
   text-align: center;
 }
 #count {
@@ -18,8 +23,12 @@
 select {
   font-size: 2em;
 }
-#options {
+#options, #messageBox {
   display: none;
+}
+.hiddenSubmit {
+  position: absolute;
+  top: -1000px;
 }
 .blackonwhite {
   color: black;
