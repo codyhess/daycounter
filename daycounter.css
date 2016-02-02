@@ -1,0 +1,43 @@
+.topbar {
+  text-align: center;
+}
+.centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -50px;
+  margin-left: -50px;
+  width: 100px;
+  height: 100px;
+  text-align: center;
+}
+#count {
+  font-weight: bold;
+  font-size: 300%;
+}
+select {
+  font-size: 2em;
+}
+#options {
+  display: none;
+}
+.blackonwhite {
+  color: black;
+  background-color:white;
+}
+.whiteonblack {
+  color: white;
+  background-color: black;
+}
+.blackonpurple {
+  color: black;
+  background-color: rebeccapurple;
+}
+.whiteonblue {
+  color: white;
+  background-color: blue;
+}
+.blackonyellow {
+  color: black;
+  background-color: yellow;
+}
