@@ -1,42 +1,86 @@
 $(document).ready(function(){
   // test taphold
-  var state = 'content'
-  var startX, endX, ctfd
+  var startX, endX, startY, endY, ctfd
+  var messageBoxShown = false
+  var dateStringShown = false
+
   var colorClasses = ['blackonwhite', 'blackonpurple',
       'blackonyellow', 'whiteonblack', 'whiteonblue']
-  var colorIndex = 0
-  var countFontSize = $('#count').css('font-size').replace('px', '')
-  console.log(countFontSize)
+  var colorState = localStorage.getItem('colorState')
+  var colorIndex = localStorage.getItem('colorIndex') || 0
+  if (colorState) {
+    $('body').removeClass('blackonwhite')
+    $('body').addClass(colorState)
+  }
+
+  var message = localStorage.getItem('message')
+  if (message) { $('#message').text(message) }
+
+
   $('html').on('touchstart', function(event) {
     ctfd = true
     startX = event.originalEvent.touches[0].pageX
+    startY = event.originalEvent.touches[0].pageY
+  })
+  $('form').on('submit', function(event) {
+    event.preventDefault()
+    message = $('#messageBox').val()
+    $('#message').text(message)
+    localStorage.setItem('message', message)
+    $('#messageBox').hide()
+    $('#message').show()
+    messageBoxShown = false
   })
   $('html').on('touchend', function(event) {
     if (event.originalEvent.touches.length === 2 && ctfd) {
       // THREE FINGER TAP
       ctfd = false
-      if (state === 'content') {
-        $('#content').hide()
-        $('#options').show()
-        state = 'options'
-      } else if (state === 'options') {
-        $('#options').hide()
-        $('#content').show()
-        state = 'content'
+      if(!messageBoxShown) {
+        $('#message').hide()
+        $('#messageBox').show()
+        if(message) {
+          $('#messageBox').val(message)
+        }
+        messageBoxShown = true
+      }
+      else {
+        message = $('#messageBox').val()
+        $('#message').text(message)
+        localStorage.setItem('message', message)
+        $('#messageBox').hide()
+        $('#message').show()
+        messageBoxShown = false
       }
     }
     else if (event.originalEvent.touches.length === 1 && ctfd) {
       // TWO FINGER TAP
       ctfd = false
+      if (dateStringShown) {
+        $('#datestring').hide()
+        $('#dateform').show()
+        dateStringShown = false
+        localStorage.setItem('dateState', dateStringShown)
+      } else {
+        $('#dateform').hide()
+        $('#datestring').show()
+        dateStringShown = true
+        localStorage.setItem('dateState', dateStringShown)
+      }
     }
     else if (true && ctfd) {
       ctfd = false
       endX = event.originalEvent.changedTouches[0].pageX
-      if ((endX - startX) > 30) {
+      endY = event.originalEvent.changedTouches[0].pageY
+      var countFontSize = $('#count').css('font-size')
+      countFontSize = countFontSize.replace('px', '')
+      if (((endX - startX) > 30)
+          || ((endY - startY) > 30)) {
         // RIGHT SWIPE
         $('#count').animate({'font-size': countFontSize*1 + 20})
         $('#count').animate({'font-size': countFontSize})
-      } else if ((endX - startX) < -30) {
+      }
+      else if (((endX - startX) < -30)
+          || ((endY - startY) < -30)) {
         // LEFT SWIPE
         $('#count').animate({'font-size': countFontSize*1 - 20})
         $('#count').animate({'font-size': countFontSize})
@@ -47,6 +91,8 @@ $(document).ready(function(){
         $('body').removeClass(colorClasses[colorIndex])
         colorIndex = ++colorIndex % colorClasses.length
         $('body').addClass(colorClasses[colorIndex])
+        localStorage.setItem('colorIndex', colorIndex)
+        localStorage.setItem('colorState', colorClasses[colorIndex])
       }
     }
   })
@@ -61,11 +107,19 @@ $(document).ready(function(){
   }
   // set date
   var startString = localStorage.getItem('startDate')
+  var dateState = localStorage.getItem('dateState')
+  if (dateState === 'true') {
+    $('#datestring').show()
+    $('#dateform').hide()
+    dateStringShown = true
+  }
   if (startString) {
     startDate = new Date(startString)
   } else {
     startDate = new Date(Date.now()-100)
   }
+  var dateString = startDate.toDateString()
+  $('#datestring').text(dateString)
   var startMonth = startDate.getMonth()
   var startDay = startDate.getDate()
   var startYear = startDate.getFullYear()
