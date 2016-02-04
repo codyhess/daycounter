@@ -17,6 +17,21 @@ $(document).ready(function(){
   if (message) { $('#message').text(message) }
 
 
+  $('#count').on('touchstart', function(event) {
+      if(!messageBoxShown) {
+        $('#messageBox').show().focus()
+	    $('#message').hide()
+	    messageBoxShown = true
+      }
+      else {
+        message = $('#messageBox').val() || 'type something here'
+        $('#message').text(message)
+        localStorage.setItem('message', message)
+        $('#messageBox').hide()
+        $('#message').show()
+        messageBoxShown = false
+      }
+  })
   $('html').on('touchstart', function(event) {
     ctfd = true
     startX = event.originalEvent.touches[0].pageX
@@ -32,27 +47,7 @@ $(document).ready(function(){
     messageBoxShown = false
   })
   $('html').on('touchend', function(event) {
-    if (event.originalEvent.touches.length === 2 && ctfd) {
-      // THREE FINGER TAP
-      ctfd = false
-      if(!messageBoxShown) {
-        $('#message').hide()
-        $('#messageBox').show()
-        if(message) {
-          $('#messageBox').val(message)
-        }
-        messageBoxShown = true
-      }
-      else {
-        message = $('#messageBox').val()
-        $('#message').text(message)
-        localStorage.setItem('message', message)
-        $('#messageBox').hide()
-        $('#message').show()
-        messageBoxShown = false
-      }
-    }
-    else if (event.originalEvent.touches.length === 1 && ctfd) {
+    if (event.originalEvent.touches.length === 1 && ctfd) {
       // TWO FINGER TAP
       ctfd = false
       if (dateStringShown) {
