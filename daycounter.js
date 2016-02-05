@@ -8,6 +8,8 @@ $(document).ready(function(){
       'blackonyellow', 'whiteonblack', 'whiteonblue']
   var colorState = localStorage.getItem('colorState')
   var colorIndex = localStorage.getItem('colorIndex') || 0
+
+
   if (colorState) {
     $('body').removeClass('blackonwhite')
     $('body').addClass(colorState)
@@ -17,28 +19,49 @@ $(document).ready(function(){
   if (message) { $('#message').text(message) }
 
 
-  $('#count').on('touchstart', function(event) {
+  $(window).on('resize', function(event) {
+	  event.preventDefault()
+  })
+  $('#dateform').on('touchstart', function(event) {
+	  event.stopPropagation()
+  }).on('touchend', function(event) {
+	  event.stopPropagation()
+  })
+  $('#count').on('touchend', function(event) {
+      event.preventDefault()
+      event.stopPropagation()
       if(!messageBoxShown) {
-        $('#messageBox').show().focus()
-	    $('#message').hide()
-	    messageBoxShown = true
+        $('#messageBox').show()
+        $('#messageBox').val(message)
+        $('#message').hide()
+        messageBoxShown = true
       }
       else {
-        message = $('#messageBox').val() || 'type something here'
+        message = $('#messageBox').val()
         $('#message').text(message)
         localStorage.setItem('message', message)
         $('#messageBox').hide()
         $('#message').show()
         messageBoxShown = false
       }
-  })
-  $('html').on('touchstart', function(event) {
+      if (messageBoxShown) {
+        document.getElementById('messageBox').focus()
+        document.getElementById('messageBox').focus()
+        document.getElementById('messageBox').focus()
+        document.getElementById('messageBox').focus()
+        document.getElementById('messageBox').focus()
+        document.getElementById('messageBox').focus()
+      }
+  })//.on('touchstart', function(event) { event.stopPropagation() })
+
+  //$('html').on('touchstart', function(event) {
+  document.addEventListener('touchstart', function(event) {
     ctfd = true
-    startX = event.originalEvent.touches[0].pageX
-    startY = event.originalEvent.touches[0].pageY
+    if(event.touches.length > 1) { event.preventDefault() }
+    startX = event.touches[0].pageX
+    startY = event.touches[0].pageY
   })
   $('form').on('submit', function(event) {
-    event.preventDefault()
     message = $('#messageBox').val()
     $('#message').text(message)
     localStorage.setItem('message', message)
@@ -46,8 +69,14 @@ $(document).ready(function(){
     $('#message').show()
     messageBoxShown = false
   })
-  $('html').on('touchend', function(event) {
-    if (event.originalEvent.touches.length === 1 && ctfd) {
+  //$('html').on('touchend', function(event) {
+  document.addEventListener('touchend', function(event) {
+	  event.preventDefault()
+	  if (messageBoxShown) {
+		  document.getElementById('messageBox').focus()
+	  }
+    if (event.touches.length === 1 && ctfd) {
+	    event.preventDefault()
       // TWO FINGER TAP
       ctfd = false
       if (dateStringShown) {
@@ -64,8 +93,8 @@ $(document).ready(function(){
     }
     else if (true && ctfd) {
       ctfd = false
-      endX = event.originalEvent.changedTouches[0].pageX
-      endY = event.originalEvent.changedTouches[0].pageY
+      endX = event.changedTouches[0].pageX
+      endY = event.changedTouches[0].pageY
       var countFontSize = $('#count').css('font-size')
       countFontSize = countFontSize.replace('px', '')
       if (((endX - startX) > 30)
@@ -131,6 +160,7 @@ $(document).ready(function(){
     localStorage.setItem('startDate', startDate.toString())
     dayCount = (Date.now()-startDate.getTime()) / 8.64e+7
     $('#count').text(Math.ceil(dayCount))
+    $('#datestring').text(startDate.toDateString())
   })
   $('#day').on('change', function(event) {
     startDay = $(this).val()
@@ -138,6 +168,7 @@ $(document).ready(function(){
     localStorage.setItem('startDate', startDate.toString())
     dayCount = (Date.now()-startDate.getTime()) / 8.64e+7
     $('#count').text(Math.ceil(dayCount))
+    $('#datestring').text(startDate.toDateString())
   })
   $('#year').on('change', function(event) {
     startYear = $(this).val()
@@ -145,5 +176,6 @@ $(document).ready(function(){
     localStorage.setItem('startDate', startDate.toString())
     dayCount = (Date.now()-startDate.getTime()) / 8.64e+7
     $('#count').text(Math.ceil(dayCount))
+    $('#datestring').text(startDate.toDateString())
   })
 })
