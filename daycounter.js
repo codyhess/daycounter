@@ -1,181 +1,163 @@
-$(document).ready(function(){
-  // test taphold
-  var startX, endX, startY, endY, ctfd
+document.addEventListener('DOMContentLoaded', function(event) {
+  // popsicle
+  var popsicle = new Popsicle()
+
+  // state variables
   var messageBoxShown = false
   var dateStringShown = false
-
   var colorClasses = ['blackonwhite', 'blackonpurple',
       'blackonyellow', 'whiteonblack', 'whiteonblue']
-  var colorState = localStorage.getItem('colorState')
+  var colorState = localStorage.getItem('colorState') || 'blackonwhite'
   var colorIndex = localStorage.getItem('colorIndex') || 0
+  var message = localStorage.getItem('message') || ''
+  var dateStringShown = localStorage.getItem('showDateString')
 
-
-  if (colorState) {
-    $('body').removeClass('blackonwhite')
-    $('body').addClass(colorState)
-  }
-
-  var message = localStorage.getItem('message')
-  if (message) { $('#message').text(message) }
-
-
-  $(window).on('resize', function(event) {
-	  event.preventDefault()
-  })
-  $('#dateform').on('touchstart', function(event) {
-	  event.stopPropagation()
-  }).on('touchend', function(event) {
-	  event.stopPropagation()
-  })
-  $('#count').on('touchend', function(event) {
-      event.preventDefault()
-      event.stopPropagation()
-      if(!messageBoxShown) {
-        $('#messageBox').show()
-        $('#messageBox').val(message)
-        $('#message').hide()
-        messageBoxShown = true
-      }
-      else {
-        message = $('#messageBox').val()
-        $('#message').text(message)
-        localStorage.setItem('message', message)
-        $('#messageBox').hide()
-        $('#message').show()
-        messageBoxShown = false
-      }
-      if (messageBoxShown) {
-        document.getElementById('messageBox').focus()
-        document.getElementById('messageBox').focus()
-        document.getElementById('messageBox').focus()
-        document.getElementById('messageBox').focus()
-        document.getElementById('messageBox').focus()
-        document.getElementById('messageBox').focus()
-      }
-  })//.on('touchstart', function(event) { event.stopPropagation() })
-
-  //$('html').on('touchstart', function(event) {
-  document.addEventListener('touchstart', function(event) {
-    ctfd = true
-    if(event.touches.length > 1) { event.preventDefault() }
-    startX = event.touches[0].pageX
-    startY = event.touches[0].pageY
-  })
-  $('form').on('submit', function(event) {
-    message = $('#messageBox').val()
-    $('#message').text(message)
-    localStorage.setItem('message', message)
-    $('#messageBox').hide()
-    $('#message').show()
-    messageBoxShown = false
-  })
-  //$('html').on('touchend', function(event) {
-  document.addEventListener('touchend', function(event) {
-	  event.preventDefault()
-	  if (messageBoxShown) {
-		  document.getElementById('messageBox').focus()
-	  }
-    if (event.touches.length === 1 && ctfd) {
-	    event.preventDefault()
-      // TWO FINGER TAP
-      ctfd = false
-      if (dateStringShown) {
-        $('#datestring').hide()
-        $('#dateform').show()
-        dateStringShown = false
-        localStorage.setItem('dateState', dateStringShown)
-      } else {
-        $('#dateform').hide()
-        $('#datestring').show()
-        dateStringShown = true
-        localStorage.setItem('dateState', dateStringShown)
-      }
-    }
-    else if (true && ctfd) {
-      ctfd = false
-      endX = event.changedTouches[0].pageX
-      endY = event.changedTouches[0].pageY
-      var countFontSize = $('#count').css('font-size')
-      countFontSize = countFontSize.replace('px', '')
-      if (((endX - startX) > 30)
-          || ((endY - startY) > 30)) {
-        // RIGHT SWIPE
-        $('#count').animate({'font-size': countFontSize*1 + 20})
-        $('#count').animate({'font-size': countFontSize})
-      }
-      else if (((endX - startX) < -30)
-          || ((endY - startY) < -30)) {
-        // LEFT SWIPE
-        $('#count').animate({'font-size': countFontSize*1 - 20})
-        $('#count').animate({'font-size': countFontSize})
-      } else {
-        // ONE FINGER TAP
-        $body = $('body')
-        $days = $('#days')
-        $('body').removeClass(colorClasses[colorIndex])
-        colorIndex = ++colorIndex % colorClasses.length
-        $('body').addClass(colorClasses[colorIndex])
-        localStorage.setItem('colorIndex', colorIndex)
-        localStorage.setItem('colorState', colorClasses[colorIndex])
-      }
-    }
-  })
-
-  // build years
-  var year = new Date(Date.now()).getFullYear()
-  var $year = $('#year')
+  // dates are a pain in the rear end
+  var startDateString = localStorage.getItem('startDate')
   var startDate
+  if (startDateString) { startDate = new Date(startDateString) }
+  else { startDate = new Date(Date.now()-100) }
+  var dateString = startDate.toDateString()
+
+  // elements
+  var body = document.getElementsByTagName('body')[0]
+  var dateForm = document.getElementById('dateForm')
+  var count = document.getElementById('count')
+  var messageBox = document.getElementById('messageBox')
+  var messageSpan = document.getElementById('message')
+  var elDateString = document.getElementById('dateString')
+  var month = document.getElementById('month')
+  var day = document.getElementById('day')
+  var year = document.getElementById('year')
+  var messageForm = document.getElementById('messageForm')
+  
+  /*
+   * DATES ARE A PAIN IN THE REAR END
+   */
+  // build years input
+  var fullYear = new Date(Date.now()).getFullYear()
   for (var i=0; i<50; i++) {
-    $('#year').append('<option value="'+(year-i)+'">'
-                      +(year-i)+'</option>')
+    var iFullYear = document.createElement('option')
+    iFullYear.value = fullYear-i
+    iFullYear.innerText = fullYear-i
+    year.appendChild(iFullYear)
   }
-  // set date
-  var startString = localStorage.getItem('startDate')
-  var dateState = localStorage.getItem('dateState')
-  if (dateState === 'true') {
-    $('#datestring').show()
-    $('#dateform').hide()
+  if (dateStringShown === 'true') {
+    elDateString.className = 'shown'
+    dateForm.className = 'hidden'
     dateStringShown = true
   }
-  if (startString) {
-    startDate = new Date(startString)
-  } else {
-    startDate = new Date(Date.now()-100)
-  }
-  var dateString = startDate.toDateString()
-  $('#datestring').text(dateString)
+  elDateString.innerText = dateString
   var startMonth = startDate.getMonth()
   var startDay = startDate.getDate()
   var startYear = startDate.getFullYear()
   var dayCount = (Date.now()-startDate.getTime()) / 8.64e+7
-  $('#count').text(Math.ceil(dayCount))
-  $('#month').val(startMonth)
-  $('#day').val(startDay)
-  $('#year').val(startYear)
+  count.innerText = Math.ceil(dayCount)
+  month.value = startMonth
+  day.value = startDay
+  year.value = startYear
 
-  // give events to the inputs
-  $('#month').on('change', function(event) {
-    startMonth = $(this).val()
+  // prepare state
+  body.className = colorState
+  messageSpan.innerText = message
+
+  /*
+   * EVENTS
+   */
+  document.addEventListener('onefingertap', rotateBackgroundColor)
+  document.addEventListener('swipeup', embiggenCount)
+  document.addEventListener('swiperight', embiggenCount)
+  document.addEventListener('swipedown', shrinkCount)
+  document.addEventListener('swipeleft', shrinkCount)
+  document.addEventListener('twofingertap', toggleDateString)
+  document.addEventListener('threefingertap', toggleHelpPage)
+  document.addEventListener('fourfingertap', refreshAppcache)
+  dateForm.addEventListener('change', updateDayCount)
+  messageForm.addEventListener('submit', updateMessageString)
+  count.addEventListener('touchstart', showMessageForm)
+  count.addEventListener('animationend', clearAnimationClass)
+  dateForm.addEventListener('touchstart', function(event) {event.stopPropagation()})
+  dateForm.addEventListener('touchend', function(event) {event.stopPropagation()})
+
+  /*
+   * UTILITY FUNCTIONS
+   */
+  function rotateBackgroundColor(event) {
+    event.preventDefault()
+    colorIndex = ++colorIndex % colorClasses.length
+    colorState = colorClasses[colorIndex]
+    localStorage.setItem('colorIndex', colorIndex)
+    localStorage.setItem('colorState', colorState)
+    body.className = colorState
+  }
+  function embiggenCount(event) {
+    count.className = 'embiggen'
+  }
+  function shrinkCount(event) {
+    count.className = 'shrink'
+  }
+  function toggleDateString(event) {
+    if (elDateString.className === 'hidden') {
+      dateForm.className = 'hidden'
+      elDateString.className = 'shown'
+      dateStringShown = true
+      localStorage.setItem('showDateString', dateStringShown)
+    } else {
+      dateForm.className = 'shown'
+      elDateString.className = 'hidden'
+      dateStringShown = false
+      localStorage.setItem('showDateString', dateStringShown)
+    }
+  }
+  function updateDayCount(event) {
+    if (event.target.id === 'month') {
+      startMonth = event.target.value
+    } else if (event.target.id === 'day') {
+      startDay = event.target.value
+    } else if (event.target.id === 'year') {
+      startYear = event.target.value
+    }
     startDate = new Date(startYear, startMonth, startDay)
     localStorage.setItem('startDate', startDate.toString())
-    dayCount = (Date.now()-startDate.getTime()) / 8.64e+7
-    $('#count').text(Math.ceil(dayCount))
-    $('#datestring').text(startDate.toDateString())
-  })
-  $('#day').on('change', function(event) {
-    startDay = $(this).val()
-    startDate = new Date(startYear, startMonth, startDay)
-    localStorage.setItem('startDate', startDate.toString())
-    dayCount = (Date.now()-startDate.getTime()) / 8.64e+7
-    $('#count').text(Math.ceil(dayCount))
-    $('#datestring').text(startDate.toDateString())
-  })
-  $('#year').on('change', function(event) {
-    startYear = $(this).val()
-    startDate = new Date(startYear, startMonth, startDay)
-    localStorage.setItem('startDate', startDate.toString())
-    dayCount = (Date.now()-startDate.getTime()) / 8.64e+7
-    $('#count').text(Math.ceil(dayCount))
-    $('#datestring').text(startDate.toDateString())
-  })
+    dayCount = (Date.now() - startDate.getTime()) / 8.64e+7
+    count.innerText = Math.ceil(dayCount)
+    elDateString.innerText = startDate.toDateString()
+  }
+  function updateMessageString(event) {
+    event.preventDefault()
+    message = event.target[0].value
+    localStorage.setItem('message', message)
+    messageSpan.innerText = message
+    messageSpan.className = 'shown'
+    messageForm.className = 'hidden'
+    messageBoxShown = false
+  }
+  function showMessageForm(event) {
+    if (!messageBoxShown) {
+      if (message) {
+        messageBox.value = message
+      }
+      messageSpan.className = 'hidden'
+      messageForm.className = 'shown'
+      messageBox.focus()
+      event.preventDefault()
+      messageBoxShown = true
+    } else {
+      message = messageBox.value
+      localStorage.setItem('message', message)
+      messageSpan.innerText = message
+      messageSpan.className = 'shown'
+      messageForm.className = 'hidden'
+      messageBoxShown = false
+    }
+  }
+  function toggleHelpPage(event) {
+  }
+  function refreshAppcache(event) {
+    applicationCache.update()
+    location.reload()
+  }
+  function clearAnimationClass(event) {
+    count.className = ''
+  }
 })
