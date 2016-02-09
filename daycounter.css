@@ -6,9 +6,6 @@ body {
 .topbar {
   text-align: center;
 }
-#datestring {
-  display: none;
-}
 .centered {
   position: absolute;
   margin: 0;
@@ -25,12 +22,15 @@ body {
 select {
   font-size: 2em;
 }
-#options, #messageBox {
+.submitHidden {
+  position: absolute;
+  visibility: hidden;
+}
+.hidden {
   display: none;
 }
-.hiddenSubmit {
-  position: absolute;
-  top: -1000px;
+.shown {
+  display: block;
 }
 .blackonwhite {
   color: black;
@@ -51,4 +51,28 @@ select {
 .blackonyellow {
   color: black;
   background-color: yellow;
+}
+.embiggen {
+  animation-name: embiggen;
+  animation-duration: 600ms;
+}
+.shrink {
+  animation-name: shrink;
+  animation-duration: 600ms;
+}
+@keyframes embiggen {
+  from {
+    font-size: 600%;
+  }
+  to {
+    font-size: 300%;
+  }
+}
+@keyframes shrink {
+  from {
+    font-size: 100%;
+  }
+  to {
+    font-size: 300%;
+  }
 }
